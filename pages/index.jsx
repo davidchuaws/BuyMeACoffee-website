@@ -1,13 +1,14 @@
 import abi from '../utils/BuyMeACoffee.json';
 import { ethers } from "ethers";
-import Head from 'next/head'
-import Image from 'next/image'
+import Head from 'next/head';
+import Image from 'next/image';
 import React, { useEffect, useState } from "react";
-import styles from '../styles/Home.module.css'
+import styles from '../styles/Home.module.css';
+import img from '../public/coffee-shop.jpg';
 
 export default function Home() {
   // Contract Address & ABI
-  const contractAddress = "0xDBa03676a2fBb6711CB652beF5B7416A53c1421D";
+  const contractAddress = "0xfAF264b81CAF1f857698969C662c3151888760e4";
   const contractABI = abi.abi;
 
   // Component state
@@ -96,6 +97,41 @@ export default function Home() {
     }
   };
 
+  const buyLargeCoffee = async () => {
+    try {
+      const {ethereum} = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum, "any");
+        const signer = provider.getSigner();
+        const buyMeACoffee = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        console.log("buying large coffee..")
+        const coffeeTxn = await buyMeACoffee.buyCoffee(
+          name ? name : "anon",
+          message ? message : "Enjoy your LARGE coffee!",
+          {value: ethers.utils.parseEther("0.003")}
+        );
+
+        await coffeeTxn.wait();
+
+        console.log("mined ", coffeeTxn.hash);
+
+        console.log("Large coffee purchased!");
+
+        // Clear the form fields.
+        setName("");
+        setMessage("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // Function to fetch all memos stored on-chain.
   const getMemos = async () => {
     try {
@@ -163,18 +199,28 @@ export default function Home() {
       }
     }
   }, []);
+
+  // Styling
+  const styling = {
+    backgroundImage: `url('${img.src}')`,
+    width:"100%",
+    height:"100%",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "cover"
+  }
   
   return (
+    <div style={styling}>
     <div className={styles.container}>
       <Head>
-        <title>Buy Albert a Coffee!</title>
+        <title>Buy David a Coffee!</title>
         <meta name="description" content="Tipping site" />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/panda_logo.JPG" />
       </Head>
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Buy Albert a Coffee!
+          Buy David a Coffee!
         </h1>
         
         {currentAccount ? (
@@ -196,7 +242,7 @@ export default function Home() {
               <br/>
               <div>
                 <label>
-                  Send Albert a message
+                  Send David a message
                 </label>
                 <br/>
 
@@ -217,6 +263,14 @@ export default function Home() {
                   Send 1 Coffee for 0.001ETH
                 </button>
               </div>
+              <div>
+                <button
+                  type="button"
+                  onClick={buyLargeCoffee}
+                >
+                  Send 1 Large Coffee for 0.003ETH
+                </button>
+              </div>
             </form>
           </div>
         ) : (
@@ -234,16 +288,17 @@ export default function Home() {
           </div>
         )
       }))}
-
+    </div>
       <footer className={styles.footer}>
         <a
           href="https://alchemy.com/?a=roadtoweb3weektwo"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Created by @thatguyintech for Alchemy's Road to Web3 lesson two!
+          Created by @davidchuaws for Alchemy's Road to Web3 lesson two!
         </a>
       </footer>
     </div>
+      
   )
 }

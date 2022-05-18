@@ -8,7 +8,7 @@ import img from '../public/coffee-shop.jpg';
 
 export default function Home() {
   // Contract Address & ABI
-  const contractAddress = "0xfAF264b81CAF1f857698969C662c3151888760e4";
+  const contractAddress = "0x3156BE1e094fd0f6829D2DD666FFeFcbb3Eb5107";
   const contractABI = abi.abi;
 
   // Component state
